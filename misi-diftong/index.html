@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MISI DIFTONG: AI, AU DAN OI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Comic Neue', 'Inter', cursive, sans-serif;
+            background: linear-gradient(135deg, #f0fdf4 0%, #eff6ff 50%, #fef9c3 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Magic Cursor FX (Disabled on Mobile / Touch devices) */
+        #magic-cursor {
+            pointer-events: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(99, 102, 241, 0.4);
+            border: 2px solid #6366f1;
+            box-shadow: 0 0 12px rgba(99, 102, 241, 0.6);
+            transform: translate(-50%, -50%);
+            transition: transform 0.08s ease-out, opacity 0.2s ease;
+            z-index: 9999;
+        }
+
+        .cursor-sparkle {
+            pointer-events: none;
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #f59e0b;
+            box-shadow: 0 0 6px #f59e0b;
+            z-index: 9998;
+            animation: sparkle-fade 0.6s forwards ease-out;
+        }
+
+        @keyframes sparkle-fade {
+            0% { transform: scale(1) translate(0, 0); opacity: 1; }
+            100% { transform: scale(0.2) translate(var(--dx), var(--dy)); opacity: 0; }
+        }
+
+        /* Keyframe Animations */
+        @keyframes popIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            70% { transform: scale(1.15); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes bounceShort {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes shakeSoft {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 15px rgba(99, 102, 241, 0.4); }
+            50% { transform: scale(1.02); box-shadow: 0 0 25px rgba(99, 102, 241, 0.7); }
+        }
+
+        .animate-pop { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .animate-bounce-short { animation: bounceShort 0.8s infinite; }
+        .animate-shake { animation: shakeSoft 0.4s ease-in-out; }
+        .glow-card { animation: pulseGlow 3s infinite; }
+
+        /* Confetti Effect */
+        .confetti-particle {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            z-index: 9990;
+            pointer-events: none;
+            animation: confetti-fall 2.5s ease-out forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% { opacity: 1; transform: translateY(0) rotate(0deg); }
+            100% { opacity: 0; transform: translateY(100vh) rotate(720deg); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, ::before, ::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            #magic-cursor, .cursor-sparkle { display: none !important; }
+        }
+    </style>
+</head>
+<body class="text-slate-800 flex flex-col min-h-screen">
+
+    <!-- Custom Cursor Canvas Container -->
+    <div id="magic-cursor" class="hidden md:block"></div>
+
+    <header class="bg-white/90 backdrop-blur-md shadow-md py-4 px-6 sticky top-0 z-50 flex flex-wrap justify-between items-center border-b border-indigo-100">
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="switchView('home')">
+            <span class="text-3xl animate-bounce-short">🚀</span>
+            <div>
+                <h1 class="text-xl md:text-2xl font-bold text-indigo-600 tracking-wide">MISI DIFTONG: AI, AU, OI</h1>
+                <p class="text-xs text-slate-500 font-semibold">Bahasa Melayu Tahun 1</p>
+            </div>
+        </div>
+        <div class="flex items-center space-x-2 mt-2 sm:mt-0">
+            <span id="activeProfileDisplay" class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-xs sm:text-sm font-bold shadow-sm">Profil: Belum Dipilih</span>
+            <button onclick="switchView('home')" class="bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 px-3 py-1 rounded-xl text-xs sm:text-sm font-semibold transition">Utama</button>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto px-4 py-6 max-w-4xl">
+
+        <section id="view-home" class="space-y-6">
+            <div class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-3xl p-6 md:p-8 text-white shadow-xl text-center relative overflow-hidden">
+                <div class="relative z-10">
+                    <span class="text-5xl md:text-6xl inline-block mb-3 animate-bounce-short">🌟</span>
+                    <h2 class="text-3xl md:text-4xl font-bold mb-2">Selamat Datang ke Misi Diftong!</h2>
+                    <p class="text-indigo-100 max-w-xl mx-auto mb-6 text-sm md:text-base font-semibold">Kembara angkasa lepas sambil belajar diftong AI, AU dan OI secara interaktif!</p>
+                    
+                    <!-- Welcome Audio Controls -->
+                    <div class="bg-white/20 backdrop-blur-md p-4 rounded-2xl max-w-md mx-auto flex items-center justify-between shadow-inner">
+                        <span class="text-sm font-bold">🎵 Lagu Selamat Datang</span>
+                        <div class="space-x-1 sm:space-x-2">
+                            <button onclick="audioModule.playAudio('assets/audio/laguselamatdatang.mp3', true)" class="bg-green-500 hover:bg-green-600 active:scale-95 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition shadow">▶ Main</button>
+                            <button onclick="audioModule.pauseAudio()" class="bg-amber-500 hover:bg-amber-600 active:scale-95 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition shadow">⏸ Jeda</button>
+                            <button onclick="audioModule.stopAudio()" class="bg-red-500 hover:bg-red-600 active:scale-95 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition shadow">⏹ Berhenti</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Menu Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <button onclick="switchView('game')" class="bg-white hover:bg-indigo-50 border-2 border-indigo-200 rounded-2xl p-5 text-left shadow-md transition transform hover:-translate-y-1 hover:shadow-lg active:scale-95 group">
+                    <div class="text-3xl mb-2 group-hover:scale-110 transition">🎮</div>
+                    <h3 class="font-bold text-lg text-indigo-700">Mula Bermain</h3>
+                    <p class="text-xs text-slate-500">Pilih tahap dan jawab soalan diftong.</p>
+                </button>
+
+                <button onclick="switchView('profile')" class="bg-white hover:bg-purple-50 border-2 border-purple-200 rounded-2xl p-5 text-left shadow-md transition transform hover:-translate-y-1 hover:shadow-lg active:scale-95 group">
+                    <div class="text-3xl mb-2 group-hover:scale-110 transition">👤</div>
+                    <h3 class="font-bold text-lg text-purple-700">Pilih Profil Murid</h3>
+                    <p class="text-xs text-slate-500">Daftar atau pilih nama anda.</p>
+                </button>
+
+                <button onclick="switchView('guide')" class="bg-white hover:bg-blue-50 border-2 border-blue-200 rounded-2xl p-5 text-left shadow-md transition transform hover:-translate-y-1 hover:shadow-lg active:scale-95 group">
+                    <div class="text-3xl mb-2 group-hover:scale-110 transition">📖</div>
+                    <h3 class="font-bold text-lg text-blue-700">Panduan Permainan</h3>
+                    <p class="text-xs text-slate-500">Ketahui cara bermain dan warna diftong.</p>
+                </button>
+
+                <button onclick="switchView('records')" class="bg-white hover:bg-amber-50 border-2 border-amber-200 rounded-2xl p-5 text-left shadow-md transition transform hover:-translate-y-1 hover:shadow-lg active:scale-95 group">
+                    <div class="text-3xl mb-2 group-hover:scale-110 transition">🏆</div>
+                    <h3 class="font-bold text-lg text-amber-700">Rekod Saya</h3>
+                    <p class="text-xs text-slate-500">Lihat pencapaian dan markah terkumpul.</p>
+                </button>
+
+                <button onclick="switchView('teacher')" class="bg-white hover:bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-5 text-left shadow-md transition transform hover:-translate-y-1 hover:shadow-lg active:scale-95 group col-span-1 sm:col-span-2 md:col-span-1">
+                    <div class="text-3xl mb-2 group-hover:scale-110 transition">👩‍🏫</div>
+                    <h3 class="font-bold text-lg text-emerald-700">Panel Guru</h3>
+                    <p class="text-xs text-slate-500">Laporan murid & tetapan kuncian tahap.</p>
+                </button>
+            </div>
+        </section>
+
+        <section id="view-profile" class="hidden space-y-6">
+            <div class="bg-white rounded-3xl p-6 shadow-xl border border-slate-100">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-purple-700">Pilih Profil Murid</h2>
+                    <button onclick="switchView('home')" class="text-sm bg-slate-100 hover:bg-slate-200 active:scale-95 px-3 py-1.5 rounded-xl font-semibold">← Kembali</button>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Nama Murid Baharu:</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="newProfileName" placeholder="Contoh: Aminah binti Ali" class="flex-grow border-2 border-slate-200 rounded-xl px-4 py-2 focus:outline-none focus:border-purple-500">
+                            <button onclick="addProfile()" class="bg-purple-600 hover:bg-purple-700 active:scale-95 text-white px-5 py-2 rounded-xl font-bold transition shadow">Tambah</button>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-semibold mb-2">Senarai Profil Sedia Ada:</h3>
+                        <div id="profileList" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-guide" class="hidden space-y-6">
+            <div class="bg-white rounded-3xl p-6 shadow-xl border border-slate-100">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-blue-700">Panduan Permainan & Peraturan</h2>
+                    <button onclick="switchView('home')" class="text-sm bg-slate-100 hover:bg-slate-200 active:scale-95 px-3 py-1.5 rounded-xl font-semibold">← Kembali</button>
+                </div>
+                <div class="space-y-4 text-sm md:text-base text-slate-600">
+                    <p>Diftong ialah gabungan dua huruf vokal yang dibunyikan dalam satu suku kata (ai, au, oi).</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-4">
+                        <div class="bg-red-50 border-2 border-red-400 p-4 rounded-2xl text-center shadow-sm">
+                            <span class="text-2xl font-bold text-red-600">AI</span>
+                            <p class="text-xs text-slate-600 mt-1">Kategori Merah (#EF4444)</p>
+                        </div>
+                        <div class="bg-blue-50 border-2 border-blue-400 p-4 rounded-2xl text-center shadow-sm">
+                            <span class="text-2xl font-bold text-blue-600">AU</span>
+                            <p class="text-xs text-slate-600 mt-1">Kategori Biru (#3B82F6)</p>
+                        </div>
+                        <div class="bg-yellow-50 border-2 border-yellow-400 p-4 rounded-2xl text-center shadow-sm">
+                            <span class="text-2xl font-bold text-yellow-600">OI</span>
+                            <p class="text-xs text-slate-600 mt-1">Kategori Kuning (#FACC15)</p>
+                        </div>
+                    </div>
+                    <ul class="list-disc pl-5 space-y-2 text-slate-700">
+                        <li><strong>1 Markah Kad Perkataan:</strong> Pilih jawapan perkataan yang tepat berdasarkan gambar.</li>
+                        <li><strong>1 Markah Sebutan:</strong> Sebut perkataan sasaran dengan jelas menggunakan mikrofon.</li>
+                        <li>Tahap 2 terkunci sehingga Tahap 1 diselesaikan (boleh dikawal dari Panel Guru).</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-records" class="hidden space-y-6">
+            <div class="bg-white rounded-3xl p-6 shadow-xl border border-slate-100">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-amber-700">Rekod Saya</h2>
+                    <button onclick="switchView('home')" class="text-sm bg-slate-100 hover:bg-slate-200 active:scale-95 px-3 py-1.5 rounded-xl font-semibold">← Kembali</button>
+                </div>
+                <div id="recordContent" class="space-y-4"></div>
+            </div>
+        </section>
+
+        <section id="view-teacher" class="hidden space-y-6">
+            <div class="bg-white rounded-3xl p-6 shadow-xl border border-slate-100">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-emerald-700">Panel Guru & Kawalan Tetapan</h2>
+                    <button onclick="switchView('home')" class="text-sm bg-slate-100 hover:bg-slate-200 active:scale-95 px-3 py-1.5 rounded-xl font-semibold">← Kembali</button>
+                </div>
+                <div class="space-y-4 text-sm">
+                    <div class="p-4 bg-purple-50 rounded-2xl border border-purple-200 flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold text-purple-900">Tetapan Kunci Tahap 2</h3>
+                            <p class="text-xs text-purple-700">Aktifkan untuk mengunci Tahap 2 sehingga murid selesai Tahap 1.</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="toggleLevelLock" class="sr-only peer" onchange="toggleTeacherLockSetting(this.checked)" checked>
+                            <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                        </label>
+                    </div>
+
+                    <div class="p-4 bg-emerald-50 rounded-2xl border border-emerald-200">
+                        <h3 class="font-bold text-emerald-800 mb-1">Status Pengesahan Data Soalan</h3>
+                        <div id="validationReport" class="text-xs text-slate-700 mt-2 space-y-1"></div>
+                    </div>
+                    <div>
+                        <h3 class="font-bold mb-2">Ringkasan Markah Murid:</h3>
+                        <div id="teacherReportList" class="space-y-2"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-game" class="hidden space-y-6">
+            <div class="bg-white rounded-3xl p-6 shadow-xl border border-slate-100">
+                <div class="flex flex-wrap justify-between items-center mb-4 gap-2">
+                    <div>
+                        <h2 id="gameTitle" class="text-2xl font-bold text-indigo-700">Tahap Permainan</h2>
+                        <p id="questionProgress" class="text-xs text-slate-500 font-semibold">Soalan 1 dari 5</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span id="scoreDisplay" class="bg-amber-100 text-amber-800 font-bold px-3 py-1 rounded-full text-sm shadow-sm">Markah: 0/20</span>
+                        <button onclick="switchView('home')" class="text-sm bg-slate-100 hover:bg-slate-200 active:scale-95 px-3 py-1.5 rounded-xl font-semibold">Keluar</button>
+                    </div>
+                </div>
+
+                <div id="levelSelectContainer" class="flex flex-col sm:flex-row gap-3 mb-4">
+                    <button id="lvl1Btn" onclick="gameModule.startLevel(1)" class="flex-1 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white py-3 rounded-2xl font-bold shadow transition">Tahap 1 (10 Markah)</button>
+                    <button id="lvl2Btn" onclick="gameModule.startLevel(2)" class="flex-1 bg-purple-600 hover:bg-purple-700 active:scale-95 text-white py-3 rounded-2xl font-bold shadow transition disabled:opacity-50 disabled:cursor-not-allowed">Tahap 2 (10 Markah)</button>
+                </div>
+
+                <div id="gameArena" class="hidden space-y-6">
+                    <!-- Image Card -->
+                    <div id="imageCardBorder" class="bg-emerald-50 border-4 border-emerald-400 rounded-3xl p-6 text-center shadow-lg transition-all duration-300">
+                        <div id="questionMediaContainer" class="mb-3 flex justify-center items-center"></div>
+                        <p class="text-xs uppercase tracking-wide font-bold text-slate-700">Kad Gambar (Petunjuk Visual)</p>
+                        <h3 id="questionPrompt" class="text-lg font-bold text-slate-900 mt-1">Pilih perkataan yang betul mengikut gambar:</h3>
+                    </div>
+
+                    <!-- Choices Grid -->
+                    <div id="choicesGrid" class="grid grid-cols-1 sm:grid-cols-3 gap-4"></div>
+
+                    <!-- Feedback Box on Correct Choice -->
+                    <div id="correctCheckFeedback" class="hidden bg-emerald-100 border-2 border-emerald-500 rounded-2xl p-4 text-center text-emerald-800 font-extrabold text-xl animate-pop shadow-md">
+                        <span class="inline-block text-3xl animate-bounce-short mr-2">🌟</span> TAHNIAH! Jawapan kamu betul!
+                    </div>
+
+                    <!-- Speech Recognition & Word Card Section -->
+                    <div id="resultFeedbackSection" class="hidden bg-purple-50 border-4 border-purple-400 rounded-3xl p-6 text-center space-y-4 shadow-lg animate-pop">
+                        <span class="bg-purple-200 text-purple-800 font-bold px-4 py-1 rounded-full text-xs">Kad Perkataan Sempurna</span>
+                        <div id="correctWordDisplay" class="text-3xl md:text-4xl font-extrabold text-purple-900 tracking-wider">---</div>
+                        
+                        <div class="flex justify-center gap-3 flex-wrap">
+                            <button onclick="gameModule.playCurrentWordAudio()" class="bg-purple-600 hover:bg-purple-700 active:scale-95 text-white px-4 py-2 rounded-xl text-sm font-bold shadow flex items-center gap-2 transition">
+                                🔊 Dengar Audio Perkataan
+                            </button>
+                            <button onclick="speechModule.startSpeechRecognition()" id="micBtn" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white px-4 py-2 rounded-xl text-sm font-bold shadow flex items-center gap-2 transition">
+                                🎤 Sebut Perkataan
+                            </button>
+                        </div>
+                        
+                        <p id="speechFeedback" class="text-xs text-purple-700 font-semibold min-h-[20px]">Tekan mikrofon untuk menyebut perkataan bagi markah tambahan (+1 markah).</p>
+                        
+                        <div class="pt-2">
+                            <button onclick="gameModule.nextQuestion()" class="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white px-8 py-3 rounded-2xl font-bold shadow-lg transition">Soalan Seterusnya →</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Level Completed / Level Transition Modal Container -->
+                <div id="levelEndContainer" class="hidden text-center space-y-5 py-8 animate-pop">
+                    <!-- Dynamic level score summary inserted here -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500 font-semibold">
+        <p>Misi Diftong: AI, AU dan OI &copy; 2026 | Pembelajaran Interaktif Bahasa Melayu Tahun 1</p>
+    </footer>
+
+    <script>
+        const questionsModule = {
+            teacherRequireLock: true,
+            data: [
+                {
+                    id: "L1_Q01",
+                    level: 1,
+                    word: "pantai",
+                    image: "assets/images/pantai.png",
+                    emojiFallback: "🌊",
+                    wordAudio: "assets/audio/pantai.mp3",
+                    correctDiphthong: "AI",
+                    options: ["Pantai", "Pandai", "Petai"],
+                    correctAnswer: "Pantai",
+                    acceptedSpeech: ["pantai", "pan tai"],
+                    pointsForChoice: 1,
+                    pointsForSpeech: 1,
+                    enabled: true
+                },
+                {
+                    id: "L1_Q02",
+                    level: 1,
+                    word: "tupai",
+                    image: "assets/images/tupai.png",
+                    emojiFallback: "🐿️",
+                    wordAudio: "assets/audio/tupai.mp3",
+                    correctDiphthong: "AI",
+                    options: ["Tupai", "Pulai", "Tepung"],
+                    correctAnswer: "Tupai",
+                    acceptedSpeech: ["tupai", "tu pai"],
+                    pointsForChoice: 1,
+                    pointsForSpeech: 1,
+                    enabled: true
+                },
+                /* SOALAN 3 TAHAP 1: DIKEMAS KINI KEPADA SURAU */
+                {
+                    id: "L1_Q03",
+                    level: 1,
+                    word: "surau",
+                    image: "assets/images/surau.png",
+                    emojiFallback: "🕌",
+                    wordAudio: "assets/audio/surau.mp3",
+                    correctDiphthong: "AU",
+                    options: ["Surau", "Pisau", "Limau"],
+                    correctAnswer: "Surau",
+                    acceptedSpeech: ["surau"],
+                    pointsForChoice: 1,
+                    pointsForSpeech: 1,
+                    enabled: true
+                },
+                {
+                    id: "L1_Q04",
+                    level: 1,
+                    word: "kerbau",
+                    image: "assets/images/kerbau.png",
+                    emojiFallback: "🐃",
+                    wordAudio: "assets/audio/kerbau.mp3",
+                    correctDiphthong: "AU",
+                    options: ["Kerbau", "Harimau", "Kacau"],
+                    correctAnswer: "Kerbau",
+                    acceptedSpeech: ["kerbau", "ker bau"],
+                    pointsForChoice: 1,
+                    pointsForSpeech: 1,
+                    enabled: true
+                },
+                {
+                    id: "L1_Q05",
+                    level: 1,
+                    word: "dodoi",
+                    image: "assets/images/dodoi.png",
+                    emojiFallback: "👶",
+                    wordAudio: "assets/audio/dodoi.mp3",
+                    correctDiphthong: "OI",
+                    options: ["Dodoi", "Koboi", "Amboi"],
+                    correctAnswer: "Dodoi",
+                    acceptedSpeech: ["dodoi", "do doi"],
+                    pointsForChoice: 1,
+                    pointsForSpeech: 1,
+                    enabled: true
+                },
+                {
+                    id: "L2_Q01",
+                    level: 2,
+                    word: "pulau",
+                    image: "assets/images/pulau.png",
+                    emojiFallback: "🏝️",
+                    wordAudio: "assets/audio/pulau.mp3",
+                    correctDiphthong: "AU",
+                    options: ["Pulau", "Pisau", "Pilau"],
+                    correctAnswer: "Pulau",
+                    acceptedSpeech: ["pulau", "pu lau"],
+                    pointsForChoice: 1,
+                    pointsForSpeech: 1,
+                    enabled: true
+                },
+                {
+                    id: "L2_Q02",
+                    level: 2,
+                    word: "limau",
+                    image: "assets/images/limau.png",
+                    emojiFallback: "🍋",
+                    wordAudio: "assets/audio/limau.mp3",
+                    correctDiphthong: "AU",
+                    options: ["Limau", "Harimau", "Kacau"],
+                    correctAnswer: "Limau",
+                    acceptedSpeech: ["limau", "li mau"],
+                    pointsForChoice: 1,
+                    pointsForSpeech: 1,
+                    enabled: true
+                },
+                {
+                    id: "L2_Q03",
+                    level: 2,
+                    word: "kedai",
+                    image: "assets/images/kedai.png",
+                    emojiFallback: "🏪",
+                    wordAudio: "assets/audio/kedai.mp3",
+                    correctDiphthong: "AI",
+                    options: ["Kedai", "Petai", "Misai"],
+                    correctAnswer: "Kedai",
+                    acceptedSpeech: ["kedai", "ke dai"],
+                    pointsForChoice: 1,
+                    pointsForSpeech: 1,
+                    enabled: true
+                },
+                {
+                    id: "L2_Q04",
+                    level: 2,
+                    word: "harimau",
+                    image: "assets/images/harimau.png",
+                    emojiFallback: "🐅",
+                    wordAudio: "assets/audio/harimau.mp3",
+                    correctDiphthong: "AU",
+                    options: ["Harimau", "Kerbau", "Pulau"],
+                    correctAnswer: "Harimau",
+                    acceptedSpeech: ["harimau", "hari mau"],
+                    pointsForChoice: 1,
+                    pointsForSpeech: 1,
+                    enabled: true
+                },
+                {
+                    id: "L2_Q05",
+                    level: 2,
+                    word: "koboi",
+                    image: "assets/images/koboi.png",
+                    emojiFallback: "🤠",
+                    wordAudio: "assets/audio/koboi.mp3",
+                    correctDiphthong: "OI",
+                    options: ["Koboi", "Amboi", "Cakoi"],
+                    correctAnswer: "Koboi",
+                    acceptedSpeech: ["koboi", "ko boi"],
+                    pointsForChoice: 1,
+                    pointsForSpeech: 1,
+                    enabled: true
+                }
+            ],
+            validateQuestions() {
+                const ids = new Set();
+                let errors = [];
+                this.data.forEach((q, idx) => {
+                    if (ids.has(q.id)) errors.push(`ID pendua: ${q.id}`);
+                    ids.add(q.id);
+                    if (!['AI', 'AU', 'OI'].includes(q.correctDiphthong)) errors.push(`Diftong tidak sah pada ${q.id}`);
+                    if (!q.options.includes(q.correctAnswer)) errors.push(`Jawapan betul tiada dalam pilihan bagi ${q.id}`);
+                    if (!q.word || !q.image) errors.push(`Data tidak lengkap pada indeks ${idx}`);
+                });
+                return errors;
+            }
+        };
+    </script>
+
+    <script>
+        let currentActiveAudio = null;
+
+        const audioModule = {
+            playAudio(filePath, isLoop = false) {
+                if (currentActiveAudio) {
+                    currentActiveAudio.pause();
+                    currentActiveAudio = null;
+                }
+                const audio = new Audio(filePath);
+                audio.loop = isLoop;
+                currentActiveAudio = audio;
+                
+                audio.play().then(() => {
+                    showToast(`🎵 Memainkan audio: ${filePath.split('/').pop()}`);
+                }).catch(err => {
+                    console.info("Aset audio tempatan tidak ditemui (Aset Pembangunan):", filePath);
+                    showToast(`ℹ️ [Pembangunan] Audio aset: ${filePath.split('/').pop()}`);
+                    if (filePath.includes('.mp3')) {
+                        const fallbackText = filePath.split('/').pop().replace('.mp3', '').replace(/_/g, ' ');
+                        speakWithSynthesis(fallbackText);
+                    }
+                });
+            },
+            pauseAudio() {
+                if (currentActiveAudio) {
+                    currentActiveAudio.pause();
+                    showToast("⏸ Audio dijeda.");
+                }
+            },
+            stopAudio() {
+                if (currentActiveAudio) {
+                    currentActiveAudio.pause();
+                    currentActiveAudio.currentTime = 0;
+                    currentActiveAudio = null;
+                    showToast("⏹ Audio dihentikan.");
+                }
+            },
+            playWordAudio(question) {
+                this.playAudio(question.wordAudio);
+            },
+            playCorrectFeedback() {
+                this.playAudio("assets/audio/tahniah_anda_betul.mp3");
+            },
+            playWrongFeedback() {
+                this.playAudio("assets/audio/cuba_lagi.mp3");
+            }
+        };
+
+        function speakWithSynthesis(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'ms-MY';
+                utterance.rate = 0.9;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+    </script>
+
+    <script>
+        const speechModule = {
+            startSpeechRecognition() {
+                const feedbackEl = document.getElementById('speechFeedback');
+                const micBtn = document.getElementById('micBtn');
+                const q = gameModule.getCurrentQuestion();
+
+                if (!q) return;
+
+                if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                    feedbackEl.innerHTML = `<span class="text-amber-600 font-bold">⚠️ Pengecaman suara tidak disokong pada pelayar ini. Teruskan ke soalan seterusnya.</span>`;
+                    showToast("Pelayar tidak menyokong Web Speech API.");
+                    return;
+                }
+
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                const recognition = new SpeechRecognition();
+                recognition.lang = 'ms-MY';
+                recognition.continuous = false;
+                recognition.interimResults = false;
+
+                micBtn.disabled = true;
+                micBtn.innerText = "🎤 Mendengar...";
+                feedbackEl.innerHTML = `<span class="text-blue-600 font-bold animate-pulse">🎤 Sila sebut "${q.word}" dengan jelas pada mikrofon...</span>`;
+
+                recognition.onresult = function(event) {
+                    micBtn.disabled = false;
+                    micBtn.innerText = "🎤 Sebut Perkataan";
+                    
+                    // Sanitize & Normalize Speech Transcript strictly
+                    const rawTranscript = event.results[0][0].transcript || "";
+                    const cleanedTranscript = rawTranscript
+                        .toLowerCase()
+                        .replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "")
+                        .replace(/\s+/g, " ")
+                        .trim();
+                    
+                    // Strict comparison with accepted words for current active question
+                    const isAccepted = q.acceptedSpeech.some(targetWord => {
+                        const cleanTarget = targetWord.toLowerCase().trim();
+                        return cleanedTranscript === cleanTarget || cleanedTranscript.includes(cleanTarget);
+                    });
+
+                    if (isAccepted) {
+                        feedbackEl.innerHTML = `<span class="text-emerald-700 font-bold">✅ Tepat! Dikesan: "${cleanedTranscript}". Markah sebutan (+1) diberikan!</span>`;
+                        gameModule.awardSpeechPoints();
+                        triggerConfetti();
+                        audioModule.playCorrectFeedback();
+                    } else {
+                        feedbackEl.innerHTML = `<span class="text-red-600 font-bold">❌ Dikesan: "${cleanedTranscript}". Belum tepat. Sila sebut "${q.word}" sekali lagi.</span>`;
+                        audioModule.playWrongFeedback();
+                    }
+                };
+
+                recognition.onerror = function(event) {
+                    micBtn.disabled = false;
+                    micBtn.innerText = "🎤 Sebut Perkataan";
+                    feedbackEl.innerHTML = `<span class="text-amber-600 font-bold">⚠️ Ralat mikrofon / Tiada suara dikesan. Anda boleh mencuba lagi atau menekan "Soalan Seterusnya".</span>`;
+                };
+
+                recognition.onend = function() {
+                    micBtn.disabled = false;
+                    micBtn.innerText = "🎤 Sebut Perkataan";
+                };
+
+                try {
+                    recognition.start();
+                } catch(e) {
+                    micBtn.disabled = false;
+                    micBtn.innerText = "🎤 Sebut Perkataan";
+                    feedbackEl.innerText = "⚠️ Mikrofon sedang aktif atau disekat.";
+                }
+            }
+        };
+    </script>
+
+    <script>
+        let appState = {
+            activeProfile: "Tetamu",
+            profiles: ["Ali", "Siti", "Ahmad"],
+            scoresLevel1: { "Ali": 8, "Siti": 10, "Ahmad": 6, "Tetamu": 0 },
+            scoresLevel2: { "Ali": 8, "Siti": 10, "Ahmad": 6, "Tetamu": 0 },
+            completedLevels: { "Ali": [1, 2], "Siti": [1, 2], "Ahmad": [1], "Tetamu": [] },
+            currentLevel: 1,
+            currentQuestionIndex: 0,
+            currentLevelScore: 0,
+            questionChoiceAwarded: false,
+            questionSpeechAwarded: false
+        };
+
+        const gameModule = {
+            startLevel(levelNum) {
+                if (levelNum === 2 && questionsModule.teacherRequireLock) {
+                    const userCompleted = appState.completedLevels[appState.activeProfile] || [];
+                    if (!userCompleted.includes(1)) {
+                        showToast("🔒 Tahap 2 terkunci. Sila selesaikan Tahap 1 terlebih dahulu!");
+                        return;
+                    }
+                }
+                appState.currentLevel = levelNum;
+                appState.currentQuestionIndex = 0;
+                appState.currentLevelScore = 0;
+
+                document.getElementById('levelSelectContainer').classList.add('hidden');
+                document.getElementById('levelEndContainer').classList.add('hidden');
+                document.getElementById('gameArena').classList.remove('hidden');
+                document.getElementById('gameTitle').innerText = `Tahap ${levelNum} Misi Diftong`;
+
+                this.loadQuestion();
+            },
+
+            getCurrentQuestion() {
+                const qList = questionsModule.data.filter(q => q.level === appState.currentLevel && q.enabled);
+                return qList[appState.currentQuestionIndex] || null;
+            },
+
+            loadQuestion() {
+                const qList = questionsModule.data.filter(q => q.level === appState.currentLevel && q.enabled);
+                
+                // Check if current level is completed safely without index overflow bug
+                if (appState.currentQuestionIndex >= qList.length) {
+                    this.completeCurrentLevel();
+                    return;
+                }
+
+                const q = qList[appState.currentQuestionIndex];
+                appState.questionChoiceAwarded = false;
+                appState.questionSpeechAwarded = false;
+
+                document.getElementById('questionProgress').innerText = `Soalan ${appState.currentQuestionIndex + 1} dari ${qList.length}`;
+                this.updateScoreDisplay();
+
+                // Style question border dynamically based on diphthong category
+                const cardBorder = document.getElementById('imageCardBorder');
+                if (q.correctDiphthong === 'AI') {
+                    cardBorder.className = "bg-red-50 border-4 border-red-400 rounded-3xl p-6 text-center shadow-lg transition-all duration-300";
+                } else if (q.correctDiphthong === 'AU') {
+                    cardBorder.className = "bg-blue-50 border-4 border-blue-400 rounded-3xl p-6 text-center shadow-lg transition-all duration-300";
+                } else {
+                    cardBorder.className = "bg-yellow-50 border-4 border-yellow-400 rounded-3xl p-6 text-center shadow-lg transition-all duration-300";
+                }
+
+                // Load question image with fallback
+                const mediaContainer = document.getElementById('questionMediaContainer');
+                mediaContainer.innerHTML = `
+                    <img src="${q.image}" alt="${q.word}" class="w-36 h-36 object-contain mx-auto rounded-xl drop-shadow-md transition-transform duration-300 hover:scale-105" 
+                         onerror="this.onerror=null; this.replaceWith(Object.assign(document.createElement('div'), {className: 'text-7xl md:text-8xl animate-bounce-short my-2', innerText: '${q.emojiFallback}'}))">
+                `;
+
+                document.getElementById('correctCheckFeedback').classList.add('hidden');
+                document.getElementById('resultFeedbackSection').classList.add('hidden');
+                document.getElementById('speechFeedback').innerText = 'Tekan mikrofon untuk menyebut perkataan bagi markah tambahan (+1 markah).';
+
+                // Render choices grid
+                const choicesGrid = document.getElementById('choicesGrid');
+                choicesGrid.innerHTML = '';
+
+                q.options.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = "choice-btn bg-white hover:bg-indigo-50 text-indigo-900 border-2 border-indigo-200 font-bold text-xl py-5 px-4 rounded-3xl shadow-md hover:shadow-lg transition transform hover:-translate-y-1 active:scale-95 flex flex-col items-center justify-center";
+                    btn.innerText = opt;
+                    btn.onclick = () => this.checkAnswer(opt, btn);
+                    choicesGrid.appendChild(btn);
+                });
+            },
+
+            checkAnswer(selectedOption, clickedBtn) {
+                const q = this.getCurrentQuestion();
+                if (!q || appState.questionChoiceAwarded) return;
+
+                if (selectedOption === q.correctAnswer) {
+                    appState.questionChoiceAwarded = true;
+                    appState.currentLevelScore += (q.pointsForChoice || 1);
+                    this.updateScoreDisplay();
+
+                    // Disable buttons & highlight selected answer
+                    const buttons = document.querySelectorAll('.choice-btn');
+                    buttons.forEach(btn => {
+                        btn.disabled = true;
+                        btn.classList.add('opacity-60', 'cursor-not-allowed');
+                    });
+                    clickedBtn.classList.remove('opacity-60', 'cursor-not-allowed');
+                    clickedBtn.classList.add('bg-emerald-500', 'text-white', 'border-emerald-600', 'animate-pop');
+
+                    document.getElementById('correctCheckFeedback').classList.remove('hidden');
+                    document.getElementById('correctWordDisplay').innerText = q.word.toUpperCase();
+                    document.getElementById('resultFeedbackSection').classList.remove('hidden');
+
+                    triggerConfetti();
+                    audioModule.playCorrectFeedback();
+                    setTimeout(() => audioModule.playWordAudio(q), 700);
+                } else {
+                    showToast("Jom cuba lagi! 😊");
+                    clickedBtn.classList.add('animate-shake', 'bg-red-100', 'border-red-400', 'text-red-700');
+                    setTimeout(() => clickedBtn.classList.remove('animate-shake'), 500);
+                    audioModule.playWrongFeedback();
+                }
+            },
+
+            awardSpeechPoints() {
+                const q = this.getCurrentQuestion();
+                if (!q) return;
+                if (!appState.questionSpeechAwarded) {
+                    appState.currentLevelScore += (q.pointsForSpeech || 1);
+                    appState.questionSpeechAwarded = true;
+                    this.updateScoreDisplay();
+                }
+            },
+
+            playCurrentWordAudio() {
+                const q = this.getCurrentQuestion();
+                if (q) audioModule.playWordAudio(q);
+            },
+
+            nextQuestion() {
+                appState.currentQuestionIndex++;
+                this.loadQuestion();
+            },
+
+            updateScoreDisplay() {
+                const totalScore = (appState.scoresLevel1[appState.activeProfile] || 0) + (appState.scoresLevel2[appState.activeProfile] || 0);
+                document.getElementById('scoreDisplay').innerText = `Markah Terkumpul: ${totalScore}/20`;
+            },
+
+            completeCurrentLevel() {
+                document.getElementById('gameArena').classList.add('hidden');
+                const levelEndContainer = document.getElementById('levelEndContainer');
+                levelEndContainer.classList.remove('hidden');
+
+                // Save scores independently
+                if (appState.currentLevel === 1) {
+                    appState.scoresLevel1[appState.activeProfile] = Math.max(appState.scoresLevel1[appState.activeProfile] || 0, appState.currentLevelScore);
+                } else {
+                    appState.scoresLevel2[appState.activeProfile] = Math.max(appState.scoresLevel2[appState.activeProfile] || 0, appState.currentLevelScore);
+                }
+
+                // Update completed status
+                if (!appState.completedLevels[appState.activeProfile]) {
+                    appState.completedLevels[appState.activeProfile] = [];
+                }
+                if (!appState.completedLevels[appState.activeProfile].includes(appState.currentLevel)) {
+                    appState.completedLevels[appState.activeProfile].push(appState.currentLevel);
+                }
+
+                updateLevelLockUI();
+                triggerConfetti();
+
+                if (appState.currentLevel === 1) {
+                    levelEndContainer.innerHTML = `
+                        <div class="bg-indigo-50 border-4 border-indigo-300 rounded-3xl p-8 shadow-xl max-w-lg mx-auto">
+                            <span class="text-7xl inline-block mb-3 animate-bounce-short">🎉</span>
+                            <h3 class="text-3xl font-extrabold text-indigo-800">TAHNIAH! TAHAP 1 SELESAI</h3>
+                            <p class="text-slate-600 mt-2 font-semibold">Markah Tahap 1 Anda: <span class="text-amber-600 font-bold text-2xl">${appState.currentLevelScore} / 10</span></p>
+                            <p class="text-xs text-slate-500 mt-1">Tahap 2 kini telah dibuka!</p>
+                            
+                            <div class="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+                                <button onclick="gameModule.startLevel(2)" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white px-6 py-3 rounded-2xl font-bold shadow-lg transition">Teruskan ke Tahap 2 🚀</button>
+                                <button onclick="switchView('home')" class="bg-slate-200 hover:bg-slate-300 active:scale-95 text-slate-700 px-6 py-3 rounded-2xl font-bold transition">Menu Utama</button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    const l1Score = appState.scoresLevel1[appState.activeProfile] || 0;
+                    const l2Score = appState.scoresLevel2[appState.activeProfile] || 0;
+                    const totalScore = l1Score + l2Score;
+
+                    levelEndContainer.innerHTML = `
+                        <div class="bg-purple-50 border-4 border-purple-300 rounded-3xl p-8 shadow-xl max-w-lg mx-auto">
+                            <span class="text-7xl inline-block mb-3 animate-bounce-short">🏆</span>
+                            <h3 class="text-3xl font-extrabold text-purple-900">SYABAS! MISI DIFTONG SELESAI</h3>
+                            <div class="my-4 p-4 bg-white rounded-2xl shadow-inner space-y-1 text-sm font-semibold">
+                                <p class="text-slate-600">Markah Tahap 1: <span class="font-bold text-indigo-600">${l1Score} / 10</span></p>
+                                <p class="text-slate-600">Markah Tahap 2: <span class="font-bold text-purple-600">${l2Score} / 10</span></p>
+                                <hr class="my-2 border-slate-200">
+                                <p class="text-slate-800 text-lg">Markah Keseluruhan: <span class="font-bold text-amber-600 text-2xl">${totalScore} / 20</span></p>
+                            </div>
+                            
+                            <div class="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+                                <button onclick="resetAndReplay()" class="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white px-6 py-3 rounded-2xl font-bold shadow-lg transition">Main Semula 🔄</button>
+                                <button onclick="switchView('home')" class="bg-slate-200 hover:bg-slate-300 active:scale-95 text-slate-700 px-6 py-3 rounded-2xl font-bold transition">Menu Utama</button>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+        };
+
+        function resetAndReplay() {
+            document.getElementById('levelEndContainer').classList.add('hidden');
+            document.getElementById('levelSelectContainer').classList.remove('hidden');
+            gameModule.startLevel(1);
+        }
+    </script>
+
+    <script>
+        window.onload = function() {
+            renderProfiles();
+            updateProfileDisplay();
+            runValidationCheck();
+            updateLevelLockUI();
+            setupCursorEffects();
+        };
+
+        function switchView(viewName) {
+            const views = ['home', 'profile', 'guide', 'records', 'teacher', 'game'];
+            views.forEach(v => {
+                const el = document.getElementById(`view-${v}`);
+                if (el) el.classList.add('hidden');
+            });
+            const target = document.getElementById(`view-${viewName}`);
+            if (target) target.classList.remove('hidden');
+
+            if (viewName === 'game') {
+                document.getElementById('gameArena').classList.add('hidden');
+                document.getElementById('levelEndContainer').classList.add('hidden');
+                document.getElementById('levelSelectContainer').classList.remove('hidden');
+                updateLevelLockUI();
+            }
+            if (viewName === 'records') renderRecords();
+            if (viewName === 'teacher') renderTeacherReport();
+        }
+
+        function toggleTeacherLockSetting(isChecked) {
+            questionsModule.teacherRequireLock = isChecked;
+            showToast(isChecked ? "🔒 Kuncian Tahap 2 diaktifkan." : "🔓 Tahap 2 dibuka untuk semua.");
+            updateLevelLockUI();
+        }
+
+        function updateLevelLockUI() {
+            const lvl2Btn = document.getElementById('lvl2Btn');
+            if (!lvl2Btn) return;
+            const userCompleted = appState.completedLevels[appState.activeProfile] || [];
+            
+            if (questionsModule.teacherRequireLock && !userCompleted.includes(1)) {
+                lvl2Btn.disabled = true;
+                lvl2Btn.innerHTML = "Tahap 2 🔒 (Terkunci)";
+                lvl2Btn.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                lvl2Btn.disabled = false;
+                lvl2Btn.innerHTML = "Tahap 2 (10 Markah)";
+                lvl2Btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        function renderProfiles() {
+            const listContainer = document.getElementById('profileList');
+            listContainer.innerHTML = '';
+            appState.profiles.forEach(prof => {
+                const div = document.createElement('div');
+                div.className = `p-4 rounded-2xl border-2 flex justify-between items-center cursor-pointer transition ${appState.activeProfile === prof ? 'border-purple-600 bg-purple-50 shadow-sm' : 'border-slate-200 hover:border-purple-300'}`;
+                div.innerHTML = `
+                    <span class="font-bold text-slate-700">${prof}</span>
+                    <button onclick="selectProfile('${prof}')" class="bg-purple-600 hover:bg-purple-700 active:scale-95 text-white px-3 py-1 rounded-xl text-xs font-bold transition">Pilih</button>
+                `;
+                listContainer.appendChild(div);
+            });
+        }
+
+        function addProfile() {
+            const input = document.getElementById('newProfileName');
+            const name = input.value.trim();
+            if (name && !appState.profiles.includes(name)) {
+                appState.profiles.push(name);
+                appState.scoresLevel1[name] = 0;
+                appState.scoresLevel2[name] = 0;
+                appState.completedLevels[name] = [];
+                input.value = '';
+                renderProfiles();
+                selectProfile(name);
+                showToast(`Profil "${name}" berjaya ditambah!`);
+            } else {
+                showToast("Sila masukkan nama sah atau nama wujud.");
+            }
+        }
+
+        function selectProfile(name) {
+            appState.activeProfile = name;
+            updateProfileDisplay();
+            renderProfiles();
+            updateLevelLockUI();
+            gameModule.updateScoreDisplay();
+            showToast(`Profil aktif: ${name}`);
+        }
+
+        function updateProfileDisplay() {
+            document.getElementById('activeProfileDisplay').innerText = `Profil: ${appState.activeProfile}`;
+        }
+
+        function renderRecords() {
+            const container = document.getElementById('recordContent');
+            const completed = (appState.completedLevels[appState.activeProfile] || []).join(', ') || "Tiada";
+            const l1Score = appState.scoresLevel1[appState.activeProfile] || 0;
+            const l2Score = appState.scoresLevel2[appState.activeProfile] || 0;
+            const total = l1Score + l2Score;
+
+            container.innerHTML = `
+                <div class="bg-amber-50 border-2 border-amber-200 p-6 rounded-3xl shadow-md">
+                    <h3 class="font-extrabold text-amber-900 text-xl">Pencapaian: ${appState.activeProfile}</h3>
+                    <div class="mt-3 space-y-1 text-sm font-semibold">
+                        <p class="text-slate-600">Markah Tahap 1: <span class="font-bold text-indigo-600">${l1Score} / 10</span></p>
+                        <p class="text-slate-600">Markah Tahap 2: <span class="font-bold text-purple-600">${l2Score} / 10</span></p>
+                        <p class="text-slate-800 text-base pt-2">Markah Tertinggi Keseluruhan: <span class="font-bold text-amber-600 text-2xl">${total} / 20</span></p>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-3">Tahap Diselesaikan: Tahap ${completed}</p>
+                </div>
+            `;
+        }
+
+        function renderTeacherReport() {
+            const list = document.getElementById('teacherReportList');
+            list.innerHTML = '';
+            appState.profiles.forEach(prof => {
+                const l1 = appState.scoresLevel1[prof] || 0;
+                const l2 = appState.scoresLevel2[prof] || 0;
+                const tot = l1 + l2;
+                const div = document.createElement('div');
+                div.className = "flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-200 text-sm";
+                div.innerHTML = `<span class="font-bold text-slate-700">${prof}</span> <span class="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-xs font-bold">Markah: ${tot} / 20 (T1: ${l1}, T2: ${l2})</span>`;
+                list.appendChild(div);
+            });
+        }
+
+        function runValidationCheck() {
+            const reportEl = document.getElementById('validationReport');
+            const errors = questionsModule.validateQuestions();
+            if (errors.length === 0) {
+                reportEl.innerHTML = `<span class="text-emerald-700 font-bold">✅ Semua ${questionsModule.data.length} soalan sah, tiada ID pendua dan berpadanan tepat!</span>`;
+            } else {
+                reportEl.innerHTML = `<span class="text-red-600 font-bold">⚠️ Ralat Data Dikesan:<br>` + errors.join('<br>') + `</span>`;
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = "fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl z-50 text-xs sm:text-sm animate-pop font-semibold";
+            toast.innerText = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2800);
+        }
+
+        function triggerConfetti() {
+            const colors = ['#ef4444', '#3b82f6', '#facc15', '#10b981', '#8b5cf6'];
+            for (let i = 0; i < 25; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti-particle';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = '-10px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 2500);
+            }
+        }
+
+        function setupCursorEffects() {
+            const cursor = document.getElementById('magic-cursor');
+            if (!cursor || window.matchMedia('(pointer: coarse)').matches) return;
+
+            let throttleTimer = false;
+            document.addEventListener('mousemove', (e) => {
+                cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+
+                if (!throttleTimer) {
+                    throttleTimer = true;
+                    setTimeout(() => { throttleTimer = false; }, 40);
+
+                    const sparkle = document.createElement('div');
+                    sparkle.className = 'cursor-sparkle';
+                    sparkle.style.left = `${e.clientX}px`;
+                    sparkle.style.top = `${e.clientY}px`;
+                    sparkle.style.setProperty('--dx', `${(Math.random() - 0.5) * 30}px`);
+                    sparkle.style.setProperty('--dy', `${(Math.random() - 0.5) * 30}px`);
+                    document.body.appendChild(sparkle);
+                    setTimeout(() => sparkle.remove(), 600);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
